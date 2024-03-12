@@ -1,0 +1,704 @@
+Program.Sub.ScreenSU.Start
+Gui.frmPyrl..create
+Gui.frmPyrl..caption("Payroll Export")
+Gui.frmPyrl..size(5100,2295)
+Gui.frmPyrl..minx(0)
+Gui.frmPyrl..miny(0)
+Gui.frmPyrl..position(0,0)
+Gui.frmPyrl..forecolor(0)
+Gui.frmPyrl..BackColor(-2147483633)
+Gui.frmPyrl..maxbutton(False)
+Gui.frmPyrl..minbutton(False)
+Gui.frmPyrl..mousepointer(0)
+Gui.frmPyrl..sizeable(False)
+Gui.frmPyrl..Event(UnLoad,frmPyrl_UnLoad)
+Gui.frmPyrl.lblBegDate.create(label,"Beginning Date",True,1935,255,1,195,240,True,0,Arial,8,-2147483633,0)
+Gui.frmPyrl.lblBegDate.defaultvalue("")
+Gui.frmPyrl.lblEndingDate.create(label,"Ending Date",True,1935,255,1,2100,270,True,0,Arial,8,-2147483633,0)
+Gui.frmPyrl.lblEndingDate.defaultvalue("")
+Gui.frmPyrl.dpbegdate.create(datepicker)
+Gui.frmPyrl.dpbegdate.size(1380,285)
+Gui.frmPyrl.dpbegdate.position(195,570)
+Gui.frmPyrl.dpbegdate.defaultvalue("")
+Gui.frmPyrl.dpendingdate.create(datepicker)
+Gui.frmPyrl.dpendingdate.size(1380,285)
+Gui.frmPyrl.dpendingdate.position(2100,570)
+Gui.frmPyrl.dpendingdate.defaultvalue("")
+Gui.frmPyrl.cmdOk.create(button)
+Gui.frmPyrl.cmdOk.caption("Ok")
+Gui.frmPyrl.cmdOk.size(855,375)
+Gui.frmPyrl.cmdOk.position(195,1215)
+Gui.frmPyrl.cmdOk.event(Click,cmdOk_Click)
+Gui.frmPyrl.cmdOk.defaultvalue("")
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'f.Intrinsic.Control.If(v.Caller.Hook,=,"15290")
+'	f.Intrinsic.Control.CallSub(createfile)
+'f.Intrinsic.Control.EndIf 
+
+'
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+
+
+'f.Intrinsic.Control.If(v.Caller.Hook,=,"16090")
+''	open connection
+'	F.odbc.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,72000)
+'	f.Intrinsic.Control.CallSub(cmdok_click)
+'	F.ODBC.Connection!conX.Close
+'f.Intrinsic.Control.EndIf 
+
+F.odbc.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,72000)
+gui.frmPyrl..Show 
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4790_Payroll.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.cmdOk_Click.Start
+F.Intrinsic.Control.SetErrorHandler("ScreenSU_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.sSQL.Declare(string)
+V.Local.sQueryE01.Declare(string)
+V.Local.sQueryE01DT.Declare(string)
+V.Local.sQueryE02.Declare(string)
+V.Local.sbegdate.Declare(string)
+V.Local.senddate.Declare(string)
+V.Local.sQueryEMP.Declare(string)
+V.Local.sQueryShift.Declare(string)
+V.Local.sQueryAbsentee.Declare(string)
+v.Local.sHold.Declare(string)
+v.Local.fTOT.Declare
+v.Local.sFld.Declare 
+v.Local.sType.Declare 
+variable.local.rDate.Declare(date)
+V.Local.sQueryE01Shf1DT.Declare 
+V.Local.sQueryE02Shf2.Declare 
+
+
+'v.Global.sEndDate.Declare 
+
+
+'V.Local.sbegdate.Set(V.Screen.frmPyrl!dpbegdate.Value)
+'V.Local.senddate.Set(V.Screen.frmPyrl!dpendingdate.Value)
+
+'v.passed.BEGDATE - 20171106
+'v.passed.ENDDATE - 20171112
+
+
+
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+'
+'Function.Intrinsic.Date.ConvertDString(v.passed.BEGDATE,"YYYY/MM/DD", variable.local.rDate)
+'V.Local.sbegdate.Set(variable.local.rDate.PervasiveDate)
+'
+'Function.Intrinsic.Date.ConvertDString(v.passed.ENDDATE,"YYYY/MM/DD", variable.local.rDate)
+'V.Local.senddate.Set(variable.local.rDate.PervasiveDate)
+
+'V.Local.sbegdate.Set("2017-11-06")
+'V.Local.senddate.Set("2017-11-11")
+
+''
+'Function.Intrinsic.Date.ConvertDString(v.passed.BIP_BegDate,"YYYY/MM/DD", variable.local.rDate)
+'V.Local.sbegdate.Set(variable.local.rDate.PervasiveDate)
+'
+'Function.Intrinsic.Date.ConvertDString(v.passed.BIP_EndDate,"YYYY/MM/DD", variable.local.rDate)
+'V.Local.senddate.Set(variable.local.rDate.PervasiveDate)
+
+
+f.Intrinsic.Control.BlockEvents 
+
+V.Local.sbegdate.Set(v.Screen.frmPyrl!dpbegdate.Value)
+V.Local.senddate.Set(v.Screen.frmPyrl!dpendingdate.Value)
+'v.Global.sEndDate.Set(V.Local.senddate)
+
+'EMPLOYEE_MSTR.employee ='50318' and 
+
+F.Intrinsic.String.Build("SELECT distinct EMPL,rtrim(DEPT_Employee) as DEPT_Employee FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where EMPLOYEE_MSTR.contract_emp <>'Y' and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}'  order by  EMPL","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryEMP)
+'
+'F.Intrinsic.String.Build("SELECT EMPL, EARNINGS_CODE,Shift_Shift ,sum(HOURS_WORKED) as HOURS_WORKED, CHARGE_DATE  FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where EMPLOYEE_MSTR.employee = '50250' and EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE = '01' and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}' GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE01DT)
+'F.Intrinsic.String.Build("SELECT EMPL , EARNINGS_CODE as E02EARNINGS_CODE,Shift_Shift as E02Shift ,sum(HOURS_WORKED) as HRE02, CHARGE_DATE FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where EMPLOYEE_MSTR.employee = '50250' and EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE IN('02','03') and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}'  GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE  ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE02)
+
+'F.Intrinsic.String.Build("SELECT EMPL, EARNINGS_CODE,'1' as 'Shift_Shift' ,sum(HOURS_WORKED) as HOURS_WORKED, CHARGE_DATE  FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE = '01' and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}' GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE01DT)
+'F.Intrinsic.String.Build("SELECT EMPL , EARNINGS_CODE as E02EARNINGS_CODE,'2' as 'E02Shift' ,sum(HOURS_WORKED) as HRE02, CHARGE_DATE FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE IN('02','03') and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}'  GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,E02Shift, CHARGE_DATE  ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE02)
+
+'Shift_Shift IN('2','3') and
+F.Intrinsic.String.Build("SELECT EMPL, EARNINGS_CODE,Shift_Shift ,sum(HOURS_WORKED) as HOURS_WORKED, CHARGE_DATE  FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where  Shift_Shift = '1'  and EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE = '01' and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}' GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE01DT)
+F.Intrinsic.String.Build("SELECT EMPL , EARNINGS_CODE as E02EARNINGS_CODE,Shift_Shift as E02Shift ,sum(HOURS_WORKED) as HRE02, CHARGE_DATE FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where  Shift_Shift = '1'  and EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE IN('02','03') and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}'  GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE  ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE02)
+
+F.Intrinsic.String.Build("SELECT EMPL, EARNINGS_CODE,Shift_Shift,sum(HOURS_WORKED) as HOURS_WORKED, CHARGE_DATE  FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where  Shift_Shift IN('2','3') and EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE = '01' and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}' GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE01Shf1DT)
+F.Intrinsic.String.Build("SELECT EMPL , EARNINGS_CODE as E02EARNINGS_CODE,Shift_Shift as E02Shift ,sum(HOURS_WORKED) as HRE02, CHARGE_DATE FROM V_JOB_DETAIL join EMPLOYEE_MSTR on  V_JOB_DETAIL.EMPL = EMPLOYEE_MSTR.employee where Shift_Shift IN('2','3') and  EMPLOYEE_MSTR.contract_emp <>'Y' and EARNINGS_CODE IN('02','03') and Edited_WO_Dtl <> 'R' and LMO =  '{0}' and CHARGE_DATE between '{1}' and '{2}'  GROUP BY EMPL,DEPT_Employee, EARNINGS_CODE,Shift_Shift, CHARGE_DATE  ","L",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryE02Shf2)
+
+
+F.Intrinsic.String.Build("Select V_TIME_ATTENDANCE.EMPLOYEE as EMPL,rtrim(Dept) as Dept,sum((HOURS_HH + (HOURS_MM/60))) as G7  from V_TIME_ATTENDANCE join EMPLOYEE_MSTR  on V_TIME_ATTENDANCE.Employee = EMPLOYEE_MSTR.employee where  EMPLOYEE_MSTR.contract_emp <>'Y' and REC_TYPE = '{0}' and PAID = '{1}' and CHARGE_DATE between '{2}' and '{3}'  group by V_TIME_ATTENDANCE.EMPLOYEE,V_TIME_ATTENDANCE.Dept","A","Y",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sQueryAbsentee)
+
+'-------------------------------------------
+'F.Intrinsic.String.Build("SELECT distinct V_JOB_DETAIL.EMPL + '43' as GKey,AMT_2 as AMT FROM V_JOB_DETAIL join PYRL_EARN_CODE Earn on  V_JOB_DETAIL.EMPL = Earn.EMPL where Edited_WO_Dtl <> 'R' and LMO =  'L' and CHARGE_DATE between '{0}' and '{1}' ",V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sSQL)
+'F.Intrinsic.String.Build(" {0} union SELECT distinct V_JOB_DETAIL.EMPL + '44' as GKey,AMT_3 as AMT FROM V_JOB_DETAIL join PYRL_EARN_CODE Earn on  V_JOB_DETAIL.EMPL = Earn.EMPL where Edited_WO_Dtl <> 'R' and LMO =  'L' and CHARGE_DATE between '{1}' and '{2}'",V.Local.sSQL,V.Local.sbegdate.pervasivedate,V.Local.senddate.PervasiveDate,V.Local.sSQL)
+
+
+
+V.Local.sSQL.set("SELECT distinct EMPLoyee + '1' as EMPL1,")
+F.Intrinsic.String.Build("{0} CASE WHEN AMT_1 = 0 THEN Rate WHEN AMT_1 IS NULL THEN Rate Else AMT_1 END as '1',",V.Local.sSQL,V.Local.sSQL)
+F.Intrinsic.String.Build("{0} EMPLoyee + '2' as EMPL2,CASE WHEN AMT_2 = 0 THEN Rate WHEN AMT_2 IS NULL THEN Rate Else AMT_2 END as '2',",V.Local.sSQL,V.Local.sSQL)
+F.Intrinsic.String.Build("{0} EMPLoyee + '3' as EMPL3,CASE WHEN AMT_3 = 0 THEN Rate WHEN AMT_3 IS NULL THEN Rate Else AMT_3 END as '3'",V.Local.sSQL,V.Local.sSQL)
+F.Intrinsic.String.Build("{0} FROM EMPLOYEE_MSTR left join PYRL_EARN_CODE Earn on  EMPLOYEE_MSTR.EMPLoyee = Earn.EMPL where EMPLOYEE_MSTR.contract_emp <>'Y' ",V.Local.sSQL,V.Local.sSQL)
+
+'------------------------------------------------------
+
+f.Data.DataTable.CreateFromSQL("DTMaster","conX",V.Local.sQueryEMP,True)
+f.Intrinsic.Control.If(v.DataTable.DTMaster.RowCount,=,0)
+	F.Data.DataTable.Close("DTMaster")
+	f.Intrinsic.UI.Msgbox("No Payroll Data to Import")
+	f.Intrinsic.Control.UnBlockEvents 
+	f.Intrinsic.Control.ExitSub 
+f.Intrinsic.Control.EndIf
+
+'------------------------------------------------------
+'F.Data.Dictionary.CreateFromSQL("WFDIC","conx",v.Local.ssql)
+'F.Data.Dictionary.SetDefaultReturn("WFDIC","")
+
+'Function.Data.Dictionary.CreateFromDataTable(dictionary name [string], datatable name [string], key column [string], value column [string])
+
+'
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+
+
+Function.Intrinsic.UI.InvokeWaitDialog("Exporting records please wait ...")
+
+f.Data.DataTable.CreateFromSQL("DTDIC","conX",V.Local.sSQL,True)
+
+Function.Data.Dictionary.CreateFromDataTable("WFDIC1","DTDIC","EMPL1","1")
+'Function.Data.Dictionary.CreateFromDataTable("WFDIC2","DTDIC","EMPL2","2")
+'Function.Data.Dictionary.CreateFromDataTable("WFDIC3","DTDIC","EMPL3","3")
+
+
+f.Intrinsic.Control.For(v.Local.i,0,v.DataTable.DTDIC.RowCount--,1)
+	Function.Data.Dictionary.AddItem("WFDIC1",v.DataTable.DTDIC(v.Local.i).EMPL2!FieldVal,v.DataTable.DTDIC(v.Local.i).2!FieldVal)
+	Function.Data.Dictionary.AddItem("WFDIC1",v.DataTable.DTDIC(v.Local.i).EMPL3!FieldVal,v.DataTable.DTDIC(v.Local.i).3!FieldVal)
+f.Intrinsic.Control.Next(v.Local.i)
+
+
+F.Data.Dictionary.SetDefaultReturn("WFDIC1","")
+'F.Data.Dictionary.SetDefaultReturn("WFDIC2","")
+'F.Data.Dictionary.SetDefaultReturn("WFDIC3","")
+
+'-----------------------------------------------------------------
+
+
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+F.Data.DataTable.CreateFromSQL("DT1","conx",V.Local.sQueryE01DT,True)
+F.Data.DataTable.CreateFromSQL("DTTemp","conx",V.Local.sQueryE02,True)
+
+'-----------------
+F.Data.DataTable.CreateFromSQL("DT1shf1","conx",V.Local.sQueryE01Shf1DT,True)
+F.Data.DataTable.CreateFromSQL("DTTempshf2","conx",V.Local.sQueryE02Shf2,True)
+'------------------------------
+
+
+
+f.Data.DataTable.CreateFromSQL("DTAbsent","conX",V.Local.sQueryAbsentee,True)
+
+
+
+f.ODBC.Connection!conx.ExecuteAndReturn("select HOLIDAY_1,HOLIDAY_2,HOLIDAY_3,HOLIDAY_4,HOLIDAY_5,HOLIDAY_6,HOLIDAY_7,HOLIDAY_8,HOLIDAY_9,HOLIDAY_10,HOLIDAY_11,HOLIDAY_12,HOLIDAY_13,HOLIDAY_14 ,HOLIDAY_15,HOLIDAY_16,HOLIDAY_17,HOLIDAY_18,HOLIDAY_19,HOLIDAY_20,HOLIDAY_21,HOLIDAY_22 ,HOLIDAY_23,HOLIDAY_24 , HOLIDAY_25,HOLIDAY_26,HOLIDAY_27,HOLIDAY_28 ,HOLIDAY_29 , HOLIDAY_30 from v_Holiday_Sched", v.Local.sHold)
+Function.Data.DataTable.CreateFromString("HDDT",v.Local.sHold, "HDATE", "date", "", "*!*")
+F.Data.DataTable.AddColumn("HDDT","Holiday","String")
+f.Data.DataTable.SetValue("HDDT",-1,"Holiday","H")
+
+
+
+F.Data.DataTable.SetPK("DT1","EMPL","CHARGE_DATE")
+F.Data.DataTable.SetPK("DTTemp","EMPL","CHARGE_DATE")
+'---------------------------
+F.Data.DataTable.SetPK("DT1shf1","EMPL","CHARGE_DATE")
+F.Data.DataTable.SetPK("DTTempshf2","EMPL","CHARGE_DATE")
+'---------------------------------
+
+
+F.Data.DataTable.Merge("DT1","DTTemp",False,4)
+
+'-----------------------
+F.Data.DataTable.Merge("DT1shf1","DTTemp",False,4)
+F.Data.DataTable.Merge("DTTempshf2","DTTemp",False,4)
+'------------------------------------------
+
+
+
+
+F.Data.Linq.Join("Leftjoin","datatable","DTTemp*!*E","datatable","HDDT*!*H","E.Charge_Date=H.HDate","E.EMPL*!*E.EARNINGS_CODE*!*E.E02EARNINGS_CODE*!*E.Shift_Shift*!*E.E02Shift*!*E.HOURS_WORKED*!*E.HRE02*!*E.CHARGE_DATE*!*H.Holiday","", "","","DT2",True)
+
+
+F.Data.DataTable.AddExpressionColumn("DT2", "E01", "Float", "isnull(HOURS_WORKED,0)")
+F.Data.DataTable.AddExpressionColumn("DT2", "E02", "Float", "isnull(HRE02,0)")
+F.Data.DataTable.AddExpressionColumn("DT2", "Earn", "string", "isnull(E02EARNINGS_CODE,'01')")
+
+
+
+F.Data.DataTable.AddExpressionColumn("DT2", "RTE02", "Float", "IIF(Earn='01',0,IIF(E02>8,8,E02))")
+
+F.Data.DataTable.AddExpressionColumn("DT2", "OTE02", "Float", "IIF(Earn='01',0,IIF(E02>8,E02-8,0))")
+
+F.Data.DataTable.AddColumn("DT2","ACC","Float")
+
+v.Local.i.Declare(long)
+v.Local.fAccVal.Declare(float)
+v.Local.sEMPL.Declare(string)
+
+
+
+
+f.Data.DataView.Create("DT2","DVTest2")
+f.Data.DataView.SetSort("DT2","DVTest2","EMPL,CHARGE_DATE")
+
+
+f.Intrinsic.Control.For(v.Local.i,0,v.DataView.DT2!DVTest2.RowCount--,1)
+	f.Intrinsic.Control.If(v.Local.sEMPL,<>,v.DataView.DT2!DVTest2(v.Local.i).EMPL!FieldVal)
+		f.Intrinsic.Math.Add(v.DataView.DT2!DVTest2(v.Local.i).E01!FieldVal,v.DataView.DT2!DVTest2(v.Local.i).RTE02!FieldVal,v.Local.fAccVal)
+		v.Local.sEMPL.set(v.DataView.DT2!DVTest2(v.Local.i).EMPL!FieldVal)
+	f.Intrinsic.Control.Else
+		f.Intrinsic.Math.Add(v.Local.fAccVal,v.DataView.DT2!DVTest2(v.Local.i).E01!FieldVal,v.DataView.DT2!DVTest2(v.Local.i).RTE02!FieldVal,v.Local.fAccVal)
+	f.Intrinsic.Control.EndIf 
+	f.Data.DataView.SetValue("DT2","DVTest2",v.Local.i,"ACC",v.Local.fAccVal)
+
+f.Intrinsic.Control.Next(v.Local.i)
+
+
+
+F.Data.DataTable.AddExpressionColumn("DT2", "E01ACT", "Float", "IIF(Earnings_code='01',IIF(ACC>=44,(IIF(ACC-(E01+RTE02)>44,0,    IIF(ACC-RTE02>44,44-(ACC-(RTE02+E01)),E01)  )),E01),0)")
+
+F.Data.DataTable.AddExpressionColumn("DT2", "E01OT", "Float", "IIF(Earnings_code='01',E01-E01ACT,0)")
+
+F.Data.DataTable.AddExpressionColumn("DT2", "ACTRTE02", "Float", "IIF(Earn='01',0,IIF(ACC>=44,(IIF(ACC-(E01+RTE02)>44,0,IIF(ACC-E01>44,IIF(44-(ACC-RTE02)>0,44-(ACC-RTE02),0) ,RTE02)  )),(IIF(E02>8,8,E02))))")
+
+F.Data.DataTable.AddExpressionColumn("DT2", "ACTOTE02", "Float", "IIF(Earn='01',0,IIF(ACC>=44,IIF(ACC-(E01+RTE02)>44,E02,E02-ACTRTE02),(IIF(E02>8,E02-8,0))))")
+
+f.Data.DataView.Create("DT2","DV2")
+
+Function.Data.DataView.ToString("DT2","DV2","*!*","#$#",v.Local.sHold)
+
+v.Local.sFld.Set("EMPL*!*EARNINGS_CODE*!*E02EARNINGS_CODE*!*Shift_Shift*!*E02Shift*!*HOURS_WORKED*!*HRE02*!*CHARGE_DATE*!*Holiday*!*E01*!*E02*!*Earn*!*RTE02*!*OTE02*!*ACC*!*E01ACT*!*E01OT*!*ACTRTE02*!*ACTOTE02")
+
+v.Local.sType.Set("string*!*string*!*string*!*string*!*string*!*string*!*string*!*date*!*string*!*Float*!*Float*!*string*!*Float*!*string*!*Float*!*Float*!*Float*!*Float*!*Float")
+
+
+'Dumped into New DT table to update Expression Column
+Function.Data.DataTable.CreateFromString("DTMaster$DT3",v.Local.sHold, v.Local.sFld, v.Local.sType, "*!*", "#$#")
+
+'F.Intrinsic.Debug.Stop
+
+f.Data.DataTable.AddRelation("DTMaster","EMPL","DTMaster$DT3","EMPL")
+
+f.Data.DataView.Create("DTMaster$DT3","DVTest3")
+'f.Data.DataView.SetFilter("DTMaster$DT3","DVTest3","Holiday='H'")
+f.Data.DataView.SetFilter("DTMaster","DVTest3","Holiday='H'")
+
+f.Intrinsic.Control.For(v.Local.i,0,v.DataView.DTMaster$DT3!DVTest3.RowCount--,1)
+
+	f.Intrinsic.Control.If(v.DataView.DTMaster$DT3!DVTest3(v.Local.i).Earn!FieldVal,=,"01")
+		f.Intrinsic.Math.Add(v.DataView.DTMaster$DT3!DVTest3(v.Local.i).E01ACT!FieldVal,v.DataView.DTMaster$DT3!DVTest3(v.Local.i).E01OT!FieldVal,v.Local.fTOT)
+		f.Data.DataView.SetValue("DTMaster$DT3","DVTest3",v.Local.i,"E01OT",v.Local.fTOT)
+		f.Data.DataView.SetValue("DTMaster$DT3","DVTest3",v.Local.i,"E01ACT",0)
+	f.Intrinsic.Control.ElseIf(v.DataView.DTMaster$DT3!DVTest3(v.Local.i).Earn!FieldVal,=,"02")
+		f.Intrinsic.Math.Add(v.DataView.DTMaster$DT3!DVTest3(v.Local.i).ACTRTE02!FieldVal,v.DataView.DTMaster$DT3!DVTest3(v.Local.i).ACTOTE02!FieldVal,v.Local.fTOT)
+		f.Data.DataView.SetValue("DTMaster$DT3","DVTest3",v.Local.i,"ACTOTE02",v.Local.fTOT)
+		f.Data.DataView.SetValue("DTMaster$DT3","DVTest3",v.Local.i,"ACTRTE02",0)
+	f.Intrinsic.Control.EndIf 
+
+f.Intrinsic.Control.Next(v.Local.i)
+
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "Shiftcode", "string", "IIF(E02Shift<>'',E02Shift,Shift_Shift)")
+
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "G52", "Float", "IIF(Shiftcode='2',IIF(Earn='01',E01ACT,ACTRTE02),0)")
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "G54", "Float", "IIF(Shiftcode='2',IIF(Earn='01',E01OT,ACTOTE02),0)")
+
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "G53", "Float", "IIF(Shiftcode='3',IIF(Earn='01',E01ACT,ACTRTE02),0)")
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "G55", "Float", "IIF(Shiftcode='3',IIF(Earn='01',E01OT,ACTOTE02),0)")
+
+
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "ACTRTE03", "Float", "IIF(Earn='03',ACTRTE02,0)")
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "ACTOTE03", "Float", "IIF(Earn='03',ACTOTE02,0)")
+
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "ACTRTE002", "Float", "IIF(Earn='03',0,ACTRTE02)")
+F.Data.DataTable.AddExpressionColumn("DTMaster$DT3", "ACTOTE002", "Float", "IIF(Earn='03',0,ACTOTE02)")
+
+
+F.Data.DataTable.AddExpressionColumn("DTMaster","G1","Float","SUM(child.E01ACT)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G2","Float","SUM(child.ACTRTE002)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G3","Float","SUM(child.ACTRTE03)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G43","Float","SUM(child.E01OT)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G44","Float","SUM(child.ACTOTE002)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G45","Float","SUM(child.ACTOTE03)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G52","Float","SUM(child.G52)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G53","Float","SUM(child.G53)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G54","Float","SUM(child.G54)")
+F.Data.DataTable.AddExpressionColumn("DTMaster","G55","Float","SUM(child.G55)")
+'
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G1","long","SUM(child.E01ACT)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G2","long","SUM(child.ACTRTE002)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G3","long","SUM(child.ACTRTE03)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G43","long","SUM(child.E01OT)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G44","long","SUM(child.ACTOTE002)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G45","long","SUM(child.ACTOTE03)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G52","long","SUM(child.G52)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G53","long","SUM(child.G53)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G54","long","SUM(child.G54)")
+'F.Data.DataTable.AddExpressionColumn("DTMaster","G55","long","SUM(child.G55)")
+
+
+
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+
+f.Intrinsic.Control.CallSub(build_data)
+
+Function.Intrinsic.UI.CloseWaitDialog
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ScreenSU_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.UI.CloseWaitDialog
+	Function.Intrinsic.String.Concat("Project: GCG_4790_Payroll.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.UnBlockEvents 
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdOk_Click.End
+
+Program.Sub.Build_Data.Start
+F.Intrinsic.Control.SetErrorHandler("chkAllEmp_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sClmnlist.Declare 
+v.Local.sFld.Declare 
+v.Local.sType.Declare 
+v.Local.sHold.Declare 
+v.local.enddt.Declare(string)
+v.Local.sRet.Declare 
+v.local.sVal.Declare 
+v.Local.i.Declare(long)
+v.Local.bFlag.Declare 
+v.local.lVal.Declare 
+v.local.fVal.Declare 
+v.local.sFldName.Declare 
+v.local.sFldVal.Declare 
+v.Local.j.Declare(string)
+
+
+
+'F.Intrinsic.Debug.InvokeDebugger
+'
+'F.Intrinsic.Debug.Stop
+
+Function.Intrinsic.String.Format(v.Screen.frmPyrl!dpendingdate.Value, "yyyy-mm-dd", v.local.enddt)
+
+f.Data.DataView.Create("DTMaster","DVString",22,"G1 IS NOT NULL","")
+Function.Data.DataView.ToString("DTMaster","DVString","*!*","#$#",v.Local.sHold)
+
+
+v.Local.sFld.Set("EMPL*!*DEPT_EMPLOYEE*!*G1*!*G2*!*G3*!*G43*!*G44*!*G45*!*G52*!*G53*!*G54*!*G55")
+
+v.Local.sType.Set("string*!*string*!*Float*!*Float*!*Float*!*Float*!*Float*!*Float*!*Float*!*Float*!*Float*!*Float")
+'v.Local.sType.Set("string*!*string*!*long*!*long*!*long*!*long*!*long*!*long*!*long*!*long*!*long*!*long")
+
+'Dumped into New DT table to update Expression Column
+Function.Data.DataTable.CreateFromString("DTExport",v.Local.sHold, v.Local.sFld, v.Local.sType, "*!*", "#$#",true)
+
+
+
+v.local.sFldName.Set(v.DataTable.DTExport.FieldNames)
+
+f.Intrinsic.String.Split(v.local.sFldName,"*!*",v.local.sFldName)
+f.Intrinsic.Control.For(v.Local.j,2,v.local.sFldName.UBound,1)
+	f.Intrinsic.Control.For(v.Local.i,0,v.DataTable.DTExport.RowCount--,1)
+
+		v.local.sFldVal.Set(v.DataTable.DTExport(v.Local.i).[v.local.sFldName(v.Local.j)]!FieldVal)
+
+		f.Intrinsic.String.IsInString(v.local.sFldVal,".",True,v.Local.bFlag)
+		f.Intrinsic.String.Split(v.local.sFldVal,".",v.local.sRet)
+		f.Intrinsic.Control.If(v.Local.sRet.UBound,>,0)
+
+	'		F.Intrinsic.Debug.Stop	
+	'		F.Intrinsic.Control.SelectCase(v.Local.sRet(1))
+	'			Function.Intrinsic.Control.CaseRange("0.00","0.125")
+	'				f.Intrinsic.String.Build("{0}.00",v.Local.sRet(0),v.local.sVal)
+	'			Function.Intrinsic.Control.CaseRange("0.126","0.375")
+	'				f.Intrinsic.String.Build("{0}.25",v.Local.sRet(0),v.local.sVal)
+	'			Function.Intrinsic.Control.CaseRange("0.376","0.625")
+	'				f.Intrinsic.String.Build("{0}.50",v.Local.sRet(0),v.local.sVal)
+	'			Function.Intrinsic.Control.CaseRange("0.626","0.875")
+	'				f.Intrinsic.String.Build("{0}.75",v.Local.sRet(0),v.local.sVal)
+	'			Function.Intrinsic.Control.CaseRange("0.875","0.999")
+	'				f.Intrinsic.Math.Add(v.Local.sRet(0),1,v.local.sVal)
+	'		Function.Intrinsic.Control.EndSelect
+
+
+			'rounding to 1/4th
+			f.Intrinsic.String.Build(".{0}",v.Local.sRet(1),v.local.sVal)
+			f.Intrinsic.Math.Mult(v.local.sVal,4,v.local.fVal)
+			f.Intrinsic.Math.Round(v.local.fVal,1,v.local.lVal)
+
+			F.Intrinsic.Control.SelectCase(v.local.lVal)
+				Function.Intrinsic.Control.Case(0)
+					f.Intrinsic.String.Build("{0}.00",v.Local.sRet(0),v.local.sVal)
+				Function.Intrinsic.Control.Case(1)
+					f.Intrinsic.String.Build("{0}.25",v.Local.sRet(0),v.local.sVal)
+				Function.Intrinsic.Control.Case(2)
+					f.Intrinsic.String.Build("{0}.50",v.Local.sRet(0),v.local.sVal)
+				Function.Intrinsic.Control.Case(3)
+					f.Intrinsic.String.Build("{0}.75",v.Local.sRet(0),v.local.sVal)
+				Function.Intrinsic.Control.Case(4)
+					f.Intrinsic.Math.Add(v.Local.sRet(0),1,v.local.sVal)
+			Function.Intrinsic.Control.EndSelect
+
+			Function.Data.DataTable.SetValue("DTExport",v.Local.i,v.local.sFldName(v.Local.j),v.local.sVal.Float)
+
+		f.Intrinsic.Control.EndIf 
+	f.Intrinsic.Control.Next(v.Local.i)
+f.Intrinsic.Control.Next(v.Local.j)
+
+f.Data.DataTable.AddColumn("DTExport","Clmn1","string","00213524")
+f.Data.DataTable.AddColumn("DTExport","Cmpycode","string","0")
+f.Data.DataTable.AddColumn("DTExport","Clmn3","string","0")
+f.Data.DataTable.AddColumn("DTExport","Clmn4","string","G")
+f.Data.DataTable.AddColumn("DTExport","Clmn5","string","")
+f.Data.DataTable.AddColumn("DTExport","Clmn7","string","")
+f.Data.DataTable.AddColumn("DTExport","Clmn8","string","")
+f.Data.DataTable.AddColumn("DTExport","Clmn9","string","0")
+f.Data.DataTable.AddColumn("DTExport","Clmn10","string","99")
+f.Data.DataTable.AddColumn("DTExport","Clmn12","string","999")
+f.Data.DataTable.AddColumn("DTExport","Clmn13","string","999")
+f.Data.DataTable.AddColumn("DTExport","Clmn14","string",v.local.enddt)
+
+F.Intrinsic.Debug.Stop
+
+f.Data.DataView.Create("DTExport","DTExportDV")
+
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G1*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG1",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG1",-1,"Clmn5","1")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G2*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG2",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG2",-1,"Clmn5","2")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G3*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG3",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG3",-1,"Clmn5","3")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G43*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG43",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG43",-1,"Clmn5","43")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G44*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG44",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG44",-1,"Clmn5","44")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G45*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG45",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG45",-1,"Clmn5","45")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G52*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG52",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG52",-1,"Clmn5","52")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G53*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG53",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG53",-1,"Clmn5","53")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G54*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG54",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG54",-1,"Clmn5","54")
+
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G55*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExport","DTExportDV","DTExportG55",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG55",-1,"Clmn5","55")
+
+
+'Function.Data.DataView.ToDataTableDistinct("DTMaster","DTMasterDV","DTExportG55",v.Local.sClmnlist)
+'v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G55*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*Clmn11*!*DEPT_EMPLOYEE*!*Clmn13")
+
+f.Data.DataTable.AddColumn("DTAbsent","Clmn1","string","00213524")
+f.Data.DataTable.AddColumn("DTAbsent","Cmpycode","string","0")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn3","string","0")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn4","string","G")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn5","string","")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn7","string","")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn8","string","")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn9","string","0")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn10","string","99")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn12","string","999")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn13","string","999")
+f.Data.DataTable.AddColumn("DTAbsent","Clmn14","string",v.local.enddt)
+
+
+
+f.Data.DataView.Create("DTAbsent","DVExportG7")
+f.Data.DataView.SetFilter("DTAbsent","DVExportG7","G7>0")
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G7*!*Clmn7*!*Clmn8*!*Clmn10*!*DEPT*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTAbsent","DVExportG7","DTExportG7",v.Local.sClmnlist,True)
+f.Data.DataTable.SetValue("DTExportG7",-1,"Clmn5","7")
+
+
+
+
+V.Local.sFldFilter.Declare(String)
+V.Local.sDT.Declare(String)
+
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG2","ExportFld","G2")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG3","ExportFld","G3")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG43","ExportFld","G43")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG44","ExportFld","G44")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG45","ExportFld","G45")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG52","ExportFld","G52")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG53","ExportFld","G53")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG54","ExportFld","G54")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG55","ExportFld","G55")
+f.Intrinsic.Control.CallSub("MergeData","DTSource","DTExportG7","ExportFld","G7")
+
+
+f.Data.DataView.Create("DTExportG1","DVExportTemp")
+v.Local.sClmnlist.Set("Clmn1*!*EMPL*!*Clmn3*!*Clmn4*!*Clmn5*!*G1*!*Clmn7*!*Clmn8*!*Clmn9*!*Clmn10*!*DEPT_EMPLOYEE*!*Clmn12*!*Clmn13*!*Clmn14")
+Function.Data.DataView.ToDataTableDistinct("DTExportG1","DVExportTemp","DTExportFinal",v.Local.sClmnlist)
+
+'Get OverTime Pay Rate G43 & G44
+'F.Data.DataTable.AddExpressionColumn("DTExportFinal","GKey","string","EMPL+Clmn5")
+
+F.Data.DataTable.AddExpressionColumn("DTExportFinal", "GKey", "string", "IIF(Clmn5=1 or Clmn5=43,EMPL+'1', IIF(Clmn5=2 or Clmn5=44,EMPL+'2',IIF(Clmn5=3 or Clmn5=45,EMPL+'3',0)))")
+'-----------------------------------------------------------------
+
+F.Data.DataTable.FillFromDictionary("DTExportFinal","WFDIC1","GKey","Clmn7")
+'F.Data.DataTable.FillFromDictionary("DTExportFinal","WFDIC2","GKey","Clmn7")
+'F.Data.DataTable.FillFromDictionary("DTExportFinal","WFDIC3","GKey","Clmn7")
+
+F.Data.DataTable.RemoveColumn("DTExportFinal","GKey")
+
+f.Data.DataView.Create("DTExportFinal","DVExportFinal",22,"G1>0","EMPL,Clmn5")
+
+Function.Data.DataTable.SetValueFormat("DTExportFinal",-1,"Empl","Empl","00000")
+
+Function.Data.DataView.ToString("DTExportFinal","DVExportFinal",";",v.Ambient.NewLine,v.Local.sHold)
+
+
+V.Local.bexists.Declare(Boolean)
+V.Local.sfile.Declare(String)
+V.Local.sfilename.Declare(String)
+V.Local.sfullpath.Declare(String)
+V.Local.sdate.Declare(String)
+
+
+F.Intrinsic.UI.ShowSaveFileDialog("","txt|*.txt",V.Local.sFile)
+F.Intrinsic.Control.If(V.Local.sFile,<>,"***CANCEL***")
+
+
+	F.Intrinsic.File.String2File(V.Local.sFile,v.Local.sHold)
+	f.Intrinsic.UI.Msgbox("Export successfully completed")
+f.Intrinsic.Control.Else
+	f.Intrinsic.UI.Msgbox("Invalid Path, Export failed")
+F.Intrinsic.Control.EndIf
+
+f.Intrinsic.Control.CallSub(frmpyrl_unload)	
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("chkAllEmp_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.UI.CloseWaitDialog
+	Function.Intrinsic.String.Concat("Project: GCG_4790_Payroll.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Build_Data.End
+
+Program.Sub.MergeData.Start
+F.Intrinsic.Control.SetErrorHandler("MergeData_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sFldFilter.Declare(String)
+v.Local.i.Declare(long)
+
+f.Intrinsic.String.Build("{0}>0",v.args.ExportFld,V.Local.sFldFilter)
+
+F.Data.DataTable.Merge(v.Args.DTsource,"DTExportG1",True,1)
+
+
+
+f.Data.DataView.Create("DTExportG1","DTVExportTemp")
+f.Data.DataView.SetFilter("DTExportG1","DTVExportTemp",V.Local.sFldFilter)
+
+f.Intrinsic.Control.For(v.Local.i,0,v.DataView.DTExportG1!DTVExportTemp.RowCount--,1)
+	f.Data.DataView.SetValue("DTExportG1","DTVExportTemp",v.Local.i,"G1",v.DataView.DTExportG1!DTVExportTemp(v.Local.i).[v.args.ExportFld]!FieldVal)
+f.Intrinsic.Control.Next(v.Local.i)
+
+
+f.Data.DataView.Close("DTExportG1","DTVExportTemp")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("MergeData_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4790_Payroll.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.MergeData.End
+
+Program.Sub.frmPyrl_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!conX.Close
+f.Intrinsic.Control.End 
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4790_Payroll.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.frmPyrl_UnLoad.End
+
+Program.Sub.Comments.Start
+${$0$}$$}$$}$12:00:00 AM$}$False
+Program.Sub.Comments.End
